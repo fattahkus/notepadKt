@@ -21,6 +21,14 @@ class NotesAdapter(private val context: Context) : androidx.recyclerview.widget.
     private var notes: List<Note> = ArrayList()
     private var isRefreshing = false
 
+    private var itemClickListener: ItemClickListener ? = null
+    interface ItemClickListener {
+        fun onItemClickListener(data:Note)
+    }
+    fun setItemClickListener(itemClickListener: ItemClickListener){
+        this.itemClickListener = itemClickListener
+    }
+
     init {
         setHasStableIds(true)
     }
@@ -46,6 +54,11 @@ class NotesAdapter(private val context: Context) : androidx.recyclerview.widget.
         val note = notes[position]
         holder.text.text = note.text
         holder.title.text = note.title
+
+        holder.delete.setOnClickListener{
+            itemClickListener?.onItemClickListener(note)
+        }
+
         holder.noteCV.setOnClickListener{
             context.startActivity<NewNoteActivity>(
                 "note" to note
@@ -68,7 +81,7 @@ class NotesAdapter(private val context: Context) : androidx.recyclerview.widget.
     }
 
     class NotesViewHolder internal constructor(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
-
+        val delete = itemView.btnDelete
         val noteCV = itemView.noteCV
         val text = itemView.textTV
         val title = itemView.titleTV

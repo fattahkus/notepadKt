@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.shrikanthravi.kotpad.adapter.NotesAdapter
+import com.shrikanthravi.kotpad.data.DataStore
+import com.shrikanthravi.kotpad.data.Note
 import kotlinx.android.synthetic.main.activity_home.*
 import kotlinx.android.synthetic.main.note_row_item.*
 import org.jetbrains.anko.startActivity
@@ -15,11 +18,22 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        fakeAppbarRL.setOnClickListener{startActivity<NewNoteActivity>()}
-        notesRV.layoutManager = GridLayoutManager(this, 2)
-        notesRV.adapter = NotesAdapter(this)
+        fakeAppbarRL.setOnClickListener{
+            startActivity<NewNoteActivity>()
+        }
+        val adapter = NotesAdapter(this)
 
-        btnDelete.setOnClickListener {  }
+        notesRV.layoutManager = GridLayoutManager(this, 2)
+        notesRV.adapter = adapter
+
+        adapter.setItemClickListener(object : NotesAdapter.ItemClickListener{
+            override fun onItemClickListener(data: Note) {
+                Snackbar.make(noteCV,"Note Has Been Deleted", Snackbar.LENGTH_SHORT).show()
+
+                DataStore.notes.delete(data)
+                adapter.refresh()
+            }
+        })
     }
 //    override fun onSea
 
